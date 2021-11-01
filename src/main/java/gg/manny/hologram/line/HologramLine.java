@@ -1,4 +1,4 @@
-package gg.manny.hologram;
+package gg.manny.hologram.line;
 
 import lombok.RequiredArgsConstructor;
 import net.minecraft.server.v1_8_R3.DataWatcher;

@@ -2,7 +2,6 @@ package gg.manny.hologram;
 
 import javax.xml.stream.Location;
 import java.util.List;
-import java.util.UUID;
 
 public interface Hologram {
 
@@ -10,7 +9,7 @@ public interface Hologram {
      * Returns the identifier of a hologram
      * @return Unique identifier of the hologram
      */
-    UUID id();
+    String id();
 
     /**
      * Returns the location of a hologram
