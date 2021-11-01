@@ -1,5 +1,6 @@
 package gg.manny.hologram;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class HologramPlugin extends JavaPlugin {
@@ -14,6 +15,10 @@ public class HologramPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         instance = null;
+    }
+
+    public static int getProtocolVersion(Player player) {
+        return player.getProtocolVersion(); // TODO Hook into ProtocolSupport
     }
 
     public static HologramPlugin getInstance() {
