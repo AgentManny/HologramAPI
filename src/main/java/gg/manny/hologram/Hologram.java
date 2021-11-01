@@ -1,21 +1,29 @@
 package gg.manny.hologram;
 
-import javax.xml.stream.Location;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
 import java.util.List;
+import java.util.UUID;
 
 public interface Hologram {
+
+    String getName();
 
     /**
      * Returns the identifier of a hologram
      * @return Unique identifier of the hologram
      */
-    String id();
+    UUID getId();
 
     /**
      * Returns the location of a hologram
      * @return Location of hologram
      */
     Location getLocation();
+
+    void setLocation(Location location);
 
     /**
      * Sends a hologram to viewers
@@ -40,9 +48,17 @@ public interface Hologram {
      */
     void setLine(int id, String line);
 
+    void addItem(ItemStack item);
+
+    void setItem(int id, ItemStack item);
+
     /**
      * @return All lines in a hologram
      */
     List<String> getLines();
+
+    List<UUID> getViewers();
+
+    void sendTo(Player player);
 
 }

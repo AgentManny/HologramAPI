@@ -1,6 +1,7 @@
 package gg.manny.hologram.command;
 
 import gg.manny.hologram.HologramPlugin;
+import gg.manny.hologram.command.argument.DebugArgument;
 import gg.manny.hologram.command.argument.ListArgument;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -16,6 +17,7 @@ public class HologramCommand implements CommandExecutor {
 
     public HologramCommand(HologramPlugin plugin) {
         commandMap.put("list", new ListArgument(plugin));
+        commandMap.put("debug", new DebugArgument(plugin));
     }
 
     @Override
