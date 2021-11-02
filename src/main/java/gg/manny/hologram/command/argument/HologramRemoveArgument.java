@@ -41,9 +41,11 @@ public class HologramRemoveArgument implements CommandArgument {
             return;
         }
 
-        String id = hologram.get().getId();
-        HologramAPI.getHolograms().remove(id);
-        sender.sendMessage(ChatColor.GOLD + "Removed " + ChatColor.WHITE + id + ChatColor.GOLD + " hologram.");
+        hologram.ifPresent(holo -> {
+            holo.destroy();
+            HologramAPI.getHolograms().remove(holo.getId());
+            sender.sendMessage(ChatColor.GOLD + "Removed " + ChatColor.WHITE + holo.getId() + ChatColor.GOLD + " hologram.");
+        });
 
     }
 }
