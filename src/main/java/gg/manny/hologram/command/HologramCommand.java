@@ -1,8 +1,7 @@
 package gg.manny.hologram.command;
 
 import gg.manny.hologram.HologramPlugin;
-import gg.manny.hologram.command.argument.DebugArgument;
-import gg.manny.hologram.command.argument.ListArgument;
+import gg.manny.hologram.command.argument.*;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,8 +15,13 @@ public class HologramCommand implements CommandExecutor {
     private Map<String, CommandArgument> commandMap = new HashMap<>();
 
     public HologramCommand(HologramPlugin plugin) {
-        commandMap.put("list", new ListArgument(plugin));
+        commandMap.put("addline", new HologramAddLineArgument());
+        commandMap.put("create", new HologramCreateArgument());
+        commandMap.put("info", new HologramInfoArgument(plugin));
+        commandMap.put("list", new HologramListArgument(plugin));
+        commandMap.put("setline", new HologramSetLineArgument());
         commandMap.put("debug", new DebugArgument(plugin));
+
     }
 
     @Override
@@ -29,10 +33,11 @@ public class HologramCommand implements CommandExecutor {
 
         String arg = args.length == 0 ? "help" : args[0].toLowerCase();
         if (arg.equals("help")) {
-            sender.sendMessage(ChatColor.LIGHT_PURPLE + "Hologram commands (" + ChatColor.YELLOW + commandMap.size() + ChatColor.LIGHT_PURPLE + "):");
+            sender.sendMessage(ChatColor.GOLD + "Hologram commands (" + ChatColor.WHITE + commandMap.size() + ChatColor.GOLD + "):");
             commandMap.forEach((name, argument) -> {
                 String description = argument.description();
-                sender.sendMessage("  " + ChatColor.LIGHT_PURPLE + "/" + label + " " + name + (description.isEmpty() ? "" : ChatColor.YELLOW + " - " + argument.description()));
+                String usage = argument.usage();
+                sender.sendMessage("  " + ChatColor.WHITE + "/" + label + " " + name + (usage.isEmpty() ? "" : " " + usage + " ") + (description.isEmpty() ? "" : ChatColor.GRAY + " (" + argument.description() + ")"));
             });
             return true;
         }
