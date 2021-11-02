@@ -3,8 +3,12 @@ package gg.manny.hologram.line;
 import gg.manny.hologram.HologramPlugin;
 import gg.manny.hologram.util.EntityUtils;
 import gg.manny.hologram.util.ReflectionUtils;
+import lombok.Getter;
+import lombok.NonNull;
 import net.minecraft.server.v1_8_R3.*;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
@@ -15,23 +19,22 @@ import static gg.manny.hologram.util.DataWatcherHelper.*;
 
 public class HologramTextLine extends HologramLine {
 
-    private final String text;
+    @NonNull @Getter private String text;
 
-    public HologramTextLine(Location location, String text) {
-        super(location);
-        this.text = text;
-        dataWatcher.watch(CUSTOM_NAME.getId(), text);
+    public HologramTextLine(String text) {
+        this.text = ChatColor.translateAlternateColorCodes('&', text);
+        dataWatcher.watch(CUSTOM_NAME.getId(), this.text);
         dataWatcher.watch(CUSTOM_NAME_VISIBLE.getId(), (byte) 1);
-
     }
 
     @Override
-    public List<Packet<?>> getPacketsFor(Player player) {
+    public List<Packet<?>> getPacketsFor(Player player, Location location) {
         List<Packet<?>> packets = new ArrayList<>();
+        if (text.isEmpty() || text.equals(" ")) return packets;
         PacketPlayOutSpawnEntityLiving spawnPacket = getSpawnPacket(location);
         boolean legacy = HologramPlugin.getInstance().onLegacyVersion(player);
         if (legacy) {
-            setAsLegacyPacket(spawnPacket); // Sets as horse
+            setAsLegacyPacket(spawnPacket, location); // Sets as horse
             packets.add(getSkullPacket(location, OFFSET_HORSE));
             packets.add(new PacketPlayOutAttachEntity(armorStandId, skullId, false));
         }
@@ -39,7 +42,15 @@ public class HologramTextLine extends HologramLine {
         return packets;
     }
 
-    private void setAsLegacyPacket(PacketPlayOutSpawnEntityLiving packet) {
+    public void updateText(Player player, String text) {
+        this.text = text;
+        DataWatcher dataWatcher = EntityUtils.getDataWatcher();
+        dataWatcher.a(CUSTOM_NAME.getId(), text);
+        PacketPlayOutEntityMetadata packet = new PacketPlayOutEntityMetadata(armorStandId, dataWatcher, true);
+        ((CraftPlayer)player).getHandle().playerConnection.sendPacket(packet);
+    }
+
+    private void setAsLegacyPacket(PacketPlayOutSpawnEntityLiving packet, Location location) {
         DataWatcher dataWatcher = EntityUtils.getDataWatcher();
         dataWatcher.a(INVISIBILITY.getId(), (byte) 0);
         dataWatcher.a(1, (short) 300); // Not sure
@@ -60,23 +71,7 @@ public class HologramTextLine extends HologramLine {
         }
     }
 
-    // TODO Send destroy packet
-    public void destroy() {
-
-    }
-
-    // TODO send update metadata packet
-    public void update() {
-
-    }
-
-    // TODO send teleport packet
-    public void teleport(Location location) {
-
-    }
-
-    public void setLocation(Location location) {
-//        this.location = location;
-        teleport(location);
+    public void setText(String text) {
+        this.text = ChatColor.translateAlternateColorCodes('&', text);
     }
 }

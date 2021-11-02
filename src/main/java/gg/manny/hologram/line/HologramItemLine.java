@@ -2,9 +2,12 @@ package gg.manny.hologram.line;
 
 import gg.manny.hologram.HologramPlugin;
 import gg.manny.hologram.entity.DummyEntityItem;
+import lombok.Getter;
 import net.minecraft.server.v1_8_R3.*;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -16,16 +19,15 @@ import static gg.manny.hologram.util.DataWatcherHelper.ITEM;
 
 public class HologramItemLine extends HologramLine {
 
-    private final ItemStack item;
+    @Getter private final ItemStack item;
 
-    private final int itemId;
+    @Getter private final int itemId;
     private final DataWatcher itemData;
 
-    public HologramItemLine(Location location, ItemStack itemStack) {
-        super(location);
+    public HologramItemLine(ItemStack itemStack) {
         this.item = itemStack;
 
-        WorldServer worldServer = ((CraftWorld) location.getWorld()).getHandle();
+        WorldServer worldServer = ((CraftWorld) Bukkit.getWorlds().get(0)).getHandle();
 
         DummyEntityItem item = new DummyEntityItem(worldServer, itemStack);
         itemId = item.getId();
@@ -33,7 +35,7 @@ public class HologramItemLine extends HologramLine {
     }
 
     @Override
-    public List<Packet<?>> getPacketsFor(Player player) {
+    public List<Packet<?>> getPacketsFor(Player player, Location location) {
         List<Packet<?>> packets = new ArrayList<>();
         boolean legacy = HologramPlugin.getInstance().onLegacyVersion(player);
         packets.add(getItemPacket(location));
@@ -62,6 +64,11 @@ public class HologramItemLine extends HologramLine {
         return new PacketPlayOutEntityMetadata(itemId, itemData, true);
     }
 
+    public void update(Player player, ItemStack item) {
+        PacketPlayOutEntityMetadata packet = getUpdateItemPacket(item);
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+    }
+
     // TODO Send destroy packet
     public void destroy() {
 
@@ -74,7 +81,7 @@ public class HologramItemLine extends HologramLine {
 
     // TODO send teleport packet
     public void teleport(Location location) {
-
+//        new PacketPlayOutEntityTeleport()
     }
 
     public void setLocation(Location location) {

@@ -1,21 +1,21 @@
 package gg.manny.hologram;
 
+import gg.manny.hologram.line.HologramLine;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface Hologram {
-
-    String getName();
 
     /**
      * Returns the identifier of a hologram
      * @return Unique identifier of the hologram
      */
-    UUID getId();
+    String getId();
 
     /**
      * Returns the location of a hologram
@@ -30,10 +30,15 @@ public interface Hologram {
      */
     void send();
 
-    /**
-     * Removes a hologram (sends destroy packet)
-     */
-    void remove();
+    void destroy();
+
+    void sendTo(Player player);
+
+    void destroy(Player player);
+
+    void update();
+
+    void update(Player player);
 
     /**
      * Add lines to a hologram
@@ -52,13 +57,10 @@ public interface Hologram {
 
     void setItem(int id, ItemStack item);
 
-    /**
-     * @return All lines in a hologram
-     */
-    List<String> getLines();
+    List<HologramLine> getLines();
 
-    List<UUID> getViewers();
+    List<String> getTextLines();
 
-    void sendTo(Player player);
+    Set<UUID> getViewers();
 
 }

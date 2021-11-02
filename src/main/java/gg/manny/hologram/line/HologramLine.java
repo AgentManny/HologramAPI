@@ -2,15 +2,16 @@ package gg.manny.hologram.line;
 
 import gg.manny.hologram.entity.DummyEntityArmorStand;
 import gg.manny.hologram.entity.DummyEntityWitherSkull;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.Getter;
 import net.minecraft.server.v1_8_R3.*;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
+@Getter
 public abstract class HologramLine {
 
     public static final int ITEM_STACK = 2;
@@ -20,18 +21,14 @@ public abstract class HologramLine {
     protected static double OFFSET_HORSE = 55.0;
     protected static double OFFSET_OTHER = 1.2;
 
-    @NonNull @Setter protected Location location;
-
     protected int armorStandId;
     protected int skullId;
 
     protected DataWatcher dataWatcher; // For armor stands
 
-    public HologramLine(Location location) {
-        this.location = location;
-
+    public HologramLine() {
         // TODO Generate entity id without creating an Entity constructor
-        WorldServer worldServer = ((CraftWorld) location.getWorld()).getHandle();
+        WorldServer worldServer = ((CraftWorld) Bukkit.getWorlds().get(0)).getHandle();
         DummyEntityArmorStand entity = new DummyEntityArmorStand(worldServer);
         armorStandId = entity.getId();
         dataWatcher = entity.getDataWatcher();
@@ -43,7 +40,7 @@ public abstract class HologramLine {
         skullId = witherSkull.getId();
     }
 
-    public abstract List<Packet<?>> getPacketsFor(Player player);
+    public abstract List<Packet<?>> getPacketsFor(Player player, Location location);
 
     public PacketPlayOutSpawnEntityLiving getSpawnPacket(Location location) {
         return new PacketPlayOutSpawnEntityLiving(armorStandId, (byte) HologramLine.ARMOR_STAND_ID,
@@ -65,5 +62,20 @@ public abstract class HologramLine {
                 WITHER_SKULL_PROJECTILE_ID, 0
         );
         return spawnPacket;
+    }
+
+    // TODO send update metadata packet
+    public void update() {
+
+    }
+
+    // TODO send teleport packet
+    public void teleport(Location location) {
+
+    }
+
+    public void setLocation(Location location) {
+//        this.location = location;
+        teleport(location);
     }
 }
