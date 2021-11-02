@@ -3,6 +3,8 @@ package gg.manny.hologram.line;
 import gg.manny.hologram.HologramPlugin;
 import gg.manny.hologram.entity.DummyEntityItem;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,7 +21,7 @@ import static gg.manny.hologram.util.DataWatcherHelper.ITEM;
 
 public class HologramItemLine extends HologramLine {
 
-    @Getter private final ItemStack item;
+    @NonNull @Getter @Setter private ItemStack item;
 
     @Getter private final int itemId;
     private final DataWatcher itemData;

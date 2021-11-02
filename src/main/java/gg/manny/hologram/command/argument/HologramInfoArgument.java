@@ -2,12 +2,10 @@ package gg.manny.hologram.command.argument;
 
 import gg.manny.hologram.Hologram;
 import gg.manny.hologram.HologramAPI;
-import gg.manny.hologram.HologramPlugin;
 import gg.manny.hologram.command.CommandArgument;
 import gg.manny.hologram.line.HologramItemLine;
 import gg.manny.hologram.line.HologramLine;
 import gg.manny.hologram.line.HologramTextLine;
-import lombok.RequiredArgsConstructor;
 import mkremins.fanciful.FancyMessage;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
@@ -20,10 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 public class HologramInfoArgument implements CommandArgument {
-
-    private final HologramPlugin plugin;
 
     @Override
     public String description() {

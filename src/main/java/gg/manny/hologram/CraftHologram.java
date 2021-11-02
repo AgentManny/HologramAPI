@@ -50,8 +50,11 @@ public class CraftHologram implements Hologram {
             viewers.add(player.getUniqueId());
             Location location = this.location.clone().add(0, this.lines.size() * DISTANCE, 0);
             for (HologramLine line : lines) {
+                if (line instanceof HologramItemLine) {
+                    location.subtract(0, DISTANCE / 2, 0);
+                }
                 line.getPacketsFor(player, location).forEach(packet -> sendPacket(player, packet));
-                location.subtract(0, DISTANCE, 0);
+                location.subtract(0, line instanceof HologramItemLine ? DISTANCE * 2 : DISTANCE, 0);
             }
         }
     }
@@ -155,7 +158,13 @@ public class CraftHologram implements Hologram {
 
     @Override
     public void setItem(int id, ItemStack item) {
-        lines.set(id, new HologramItemLine(item));
+        if (id > lines.size() - 1) {
+            lines.add(new HologramItemLine(item));
+        } else if (lines.get(id) instanceof HologramItemLine) {
+            ((HologramItemLine) lines.get(id)).setItem(item);
+        } else {
+            lines.set(id, new HologramItemLine(item));
+        }
         update();
     }
 
@@ -176,6 +185,8 @@ public class CraftHologram implements Hologram {
     public void setLocation(Location location) {
         // todo Update location with teleport packet
         this.location = location;
+        destroy();
+        send();
     }
 
     private void sendPacket(Player player, Packet<?> packet) {

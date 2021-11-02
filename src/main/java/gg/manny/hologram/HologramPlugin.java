@@ -21,7 +21,7 @@ public class HologramPlugin extends JavaPlugin implements Listener {
 
         protocolSupport = getServer().getPluginManager().isPluginEnabled("ProtocolSupport");
 
-        getCommand("hologram").setExecutor(new HologramCommand(this));
+        getCommand("hologram").setExecutor(new HologramCommand());
 
         getServer().getPluginManager().registerEvents(new HologramListener(), this);
     }

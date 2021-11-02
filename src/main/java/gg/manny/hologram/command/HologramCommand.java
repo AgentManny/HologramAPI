@@ -1,6 +1,5 @@
 package gg.manny.hologram.command;
 
-import gg.manny.hologram.HologramPlugin;
 import gg.manny.hologram.command.argument.*;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -14,14 +13,15 @@ public class HologramCommand implements CommandExecutor {
 
     private Map<String, CommandArgument> commandMap = new HashMap<>();
 
-    public HologramCommand(HologramPlugin plugin) {
+    public HologramCommand() {
+        commandMap.put("additem", new HologramAddItemArgument());
         commandMap.put("addline", new HologramAddLineArgument());
         commandMap.put("create", new HologramCreateArgument());
-        commandMap.put("info", new HologramInfoArgument(plugin));
-        commandMap.put("list", new HologramListArgument(plugin));
+        commandMap.put("info", new HologramInfoArgument());
+        commandMap.put("list", new HologramListArgument());
+        commandMap.put("remove", new HologramRemoveArgument());
         commandMap.put("setline", new HologramSetLineArgument());
-        commandMap.put("debug", new DebugArgument(plugin));
-
+        commandMap.put("setitem", new HologramSetItemArgument());
     }
 
     @Override

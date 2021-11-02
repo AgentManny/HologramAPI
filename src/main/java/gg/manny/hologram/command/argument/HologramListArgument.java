@@ -2,9 +2,7 @@ package gg.manny.hologram.command.argument;
 
 import gg.manny.hologram.Hologram;
 import gg.manny.hologram.HologramAPI;
-import gg.manny.hologram.HologramPlugin;
 import gg.manny.hologram.command.CommandArgument;
-import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -12,10 +10,7 @@ import org.bukkit.command.CommandSender;
 import java.util.Collection;
 import java.util.List;
 
-@RequiredArgsConstructor
 public class HologramListArgument implements CommandArgument {
-
-    private final HologramPlugin plugin;
 
     @Override
     public String description() {

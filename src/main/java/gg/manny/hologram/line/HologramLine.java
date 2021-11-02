@@ -18,8 +18,8 @@ public abstract class HologramLine {
     protected static int ARMOR_STAND_ID = 30;
     protected static int WITHER_SKULL_PROJECTILE_ID = 66;
 
-    protected static double OFFSET_HORSE = 55.0;
-    protected static double OFFSET_OTHER = 1.2;
+    protected static double OFFSET_HORSE = 56.5;
+    protected static double OFFSET_OTHER = 1.5;
 
     protected int armorStandId;
     protected int skullId;
@@ -44,7 +44,7 @@ public abstract class HologramLine {
 
     public PacketPlayOutSpawnEntityLiving getSpawnPacket(Location location) {
         return new PacketPlayOutSpawnEntityLiving(armorStandId, (byte) HologramLine.ARMOR_STAND_ID,
-                location.getX(), location.getY() - 0.13 + HologramLine.OFFSET_OTHER, location.getZ(),
+                location.getX(), (location.getY() - 0.29) + HologramLine.OFFSET_OTHER, location.getZ(),
                 0, 0, 0,
                 0, 0, 0,
                 dataWatcher
