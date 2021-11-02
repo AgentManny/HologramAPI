@@ -6,7 +6,6 @@ import gg.manny.hologram.line.HologramTextLine;
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
 import org.bukkit.Bukkit;
@@ -21,13 +20,12 @@ import java.util.Set;
 import java.util.UUID;
 
 @Getter
-@RequiredArgsConstructor
 public class CraftHologram implements Hologram {
 
-    public static int DISTANCE_RADIUS = 15;
+    public static int DISTANCE_RADIUS = 20;
     public static final double DISTANCE = 0.23; // Credits: filoghost
 
-    @NonNull private String id;
+    private String id;
 
     protected List<HologramLine> lastLines = new ArrayList<>();
     public List<HologramLine> lines = new ArrayList<>();
@@ -36,12 +34,30 @@ public class CraftHologram implements Hologram {
 
     @NonNull private Location location;
 
+    public CraftHologram(String id, Location location) {
+        this.id = id;
+        this.location = location;
+    }
+
+    public CraftHologram(Location location) {
+        this.location = location;
+    }
+
     @Override
     public void send() {
-        Bukkit.getOnlinePlayers()
-                .stream()
-                .filter(player -> !viewers.contains(player.getUniqueId()) && player.getLocation().distance(location) < DISTANCE_RADIUS)
-                .forEach(this::sendTo);
+        if (viewers.isEmpty()) { // Assumes public hologram
+            Bukkit.getOnlinePlayers()
+                    .stream()
+                    .filter(player -> !viewers.contains(player.getUniqueId()) && player.getLocation().distance(location) < DISTANCE_RADIUS)
+                    .forEach(this::sendTo);
+        } else {
+            for (UUID viewer : viewers) {
+                Player player = Bukkit.getPlayer(viewer);
+                if (player != null) {
+                    sendTo(player);
+                }
+            }
+        }
     }
 
     @Override
