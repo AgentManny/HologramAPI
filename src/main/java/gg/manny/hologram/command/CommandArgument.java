@@ -8,6 +8,10 @@ public interface CommandArgument {
         return sender.isOp();
     }
 
+    default String usage() {
+        return "";
+    }
+
     default String description() {
         return "";
     }
