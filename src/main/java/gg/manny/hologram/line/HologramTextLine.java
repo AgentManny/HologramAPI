@@ -36,14 +36,16 @@ public class HologramTextLine extends HologramLine {
         dataWatcher.watch(CUSTOM_NAME.getId(), text);
         dataWatcher.watch(CUSTOM_NAME_VISIBLE.getId(), (byte) 1);
 
-
+        // I should remove Dummy entities and use reflections to add to the entity id
+        // instead of wasting garbage collection resources since I'm only sending holograms through
+        // packets, unless I plan to have global entities
         DummyEntityWitherSkull witherSkull = new DummyEntityWitherSkull(worldServer);
         skullId = witherSkull.getId();
     }
 
     public PacketPlayOutSpawnEntityLiving getSpawnPacket(Location location) {
         return new PacketPlayOutSpawnEntityLiving(armorStandId, (byte) HologramLine.ARMOR_STAND_ID,
-                location.getX(), location.getY(), location.getZ(),
+                location.getX(), location.getY() - 0.13 + HologramLine.OFFSET_OTHER, location.getZ(),
                 0, 0, 0,
                 0, 0, 0,
                 dataWatcher
@@ -53,7 +55,7 @@ public class HologramTextLine extends HologramLine {
     public PacketPlayOutSpawnEntity getSkullPacket(Location location) {
         PacketPlayOutSpawnEntity spawnPacket = new PacketPlayOutSpawnEntity(skullId,
                 location.getX(),
-                (location.getY() - 0.13) + 55.0,
+                location.getY() - 0.13 + 55.0,
                 location.getZ(),
                 0, 0, 0,
                 (int) location.getPitch(),
@@ -88,16 +90,13 @@ public class HologramTextLine extends HologramLine {
     public List<Packet<?>> getPacketsFor(Player player) {
         List<Packet<?>> packets = new ArrayList<>();
         PacketPlayOutSpawnEntityLiving spawnPacket = getSpawnPacket(location);
-        if (HologramPlugin.getInstance().onLegacyVersion(player)) {
+        boolean legacy = HologramPlugin.getInstance().onLegacyVersion(player);
+        if (legacy) {
             setAsLegacyPacket(spawnPacket); // Sets as horse
-
             packets.add(getSkullPacket(location));
-            // TODO Add Skull Packet
-            // TODO Add Attach Packet
-
-        } else {
+            packets.add(new PacketPlayOutAttachEntity(armorStandId, skullId, false));
         }
-        packets.add(spawnPacket);
+        packets.add(0, spawnPacket);
         return packets;
     }
 

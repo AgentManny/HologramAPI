@@ -1,5 +1,6 @@
 package gg.manny.hologram;
 
+import gg.manny.hologram.line.HologramItemLine;
 import gg.manny.hologram.line.HologramLine;
 import gg.manny.hologram.line.HologramTextLine;
 import lombok.Getter;
@@ -62,7 +63,7 @@ public class CraftHologram implements Hologram {
 
     @Override
     public void addItem(ItemStack item) {
-
+        this.lines.add(new HologramItemLine(location, item));
     }
 
     @Override

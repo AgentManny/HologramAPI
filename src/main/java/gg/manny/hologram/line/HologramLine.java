@@ -10,6 +10,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public abstract class HologramLine {
 
+    public static final int ITEM_STACK = 2;
     protected static int ARMOR_STAND_ID = 30;
     protected static int WITHER_SKULL_PROJECTILE_ID = 66;
 
