@@ -1,5 +1,5 @@
 name: HologramAPI
-version: ${git.commit.id.abbrev}
+version: "${git.commit.id.abbrev}"
 main: gg.manny.hologram.HologramPlugin
 author: Manny
 softdepend: [ProtocolSupport]
