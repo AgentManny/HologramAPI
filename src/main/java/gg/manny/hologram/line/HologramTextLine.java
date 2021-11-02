@@ -1,13 +1,11 @@
 package gg.manny.hologram.line;
 
 import gg.manny.hologram.HologramPlugin;
-import gg.manny.hologram.entity.DummyEntityHorse;
-import net.minecraft.server.v1_8_R3.DataWatcher;
-import net.minecraft.server.v1_8_R3.Packet;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntity;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import gg.manny.hologram.entity.DummyEntityArmorStand;
+import gg.manny.hologram.entity.DummyEntityWitherSkull;
+import gg.manny.hologram.util.EntityUtils;
+import gg.manny.hologram.util.ReflectionUtils;
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.EntityType;
@@ -22,31 +20,40 @@ public class HologramTextLine extends HologramLine {
 
     private final String text;
 
+    private final int armorStandId;
+    private final int skullId;
+    private final DataWatcher dataWatcher;
+
     public HologramTextLine(Location location, String text) {
         super(location);
         this.text = text;
+
+        WorldServer worldServer = ((CraftWorld) location.getWorld()).getHandle();
+
+        DummyEntityArmorStand entity = new DummyEntityArmorStand(worldServer);
+        armorStandId = entity.getId();
+        dataWatcher = entity.getDataWatcher();
+        dataWatcher.watch(CUSTOM_NAME.getId(), text);
+        dataWatcher.watch(CUSTOM_NAME_VISIBLE.getId(), (byte) 1);
+
+
+        DummyEntityWitherSkull witherSkull = new DummyEntityWitherSkull(worldServer);
+        skullId = witherSkull.getId();
     }
 
-    @Override
-    public List<Packet<?>> getPacketsFor(Player player) {
-        List<Packet<?>> packets = new ArrayList<>();
-        boolean legacy = HologramPlugin.onLegacyVersion(player);
-        if (legacy) {
-             packets.add(getSkullPacket(location));
-            packets.add(getHorsePacket());
-        } else {
-            // Add armor stands
-            player.sendMessage(ChatColor.RED + "Your Protocol version isn't supported yet.");
-        }
-        return packets;
+    public PacketPlayOutSpawnEntityLiving getSpawnPacket(Location location) {
+        return new PacketPlayOutSpawnEntityLiving(armorStandId, (byte) HologramLine.ARMOR_STAND_ID,
+                location.getX(), location.getY(), location.getZ(),
+                0, 0, 0,
+                0, 0, 0,
+                dataWatcher
+        );
     }
 
-    // TODO eventually use reflections
     public PacketPlayOutSpawnEntity getSkullPacket(Location location) {
-        DummyEntityHorse entity = new DummyEntityHorse(((CraftWorld) location.getWorld()).getHandle(), text); // LMFAO
-        PacketPlayOutSpawnEntity spawnPacket = new PacketPlayOutSpawnEntity(entity.getId(),
+        PacketPlayOutSpawnEntity spawnPacket = new PacketPlayOutSpawnEntity(skullId,
                 location.getX(),
-                location.getY() - 0.13 + 55.0,
+                (location.getY() - 0.13) + 55.0,
                 location.getZ(),
                 0, 0, 0,
                 (int) location.getPitch(),
@@ -56,43 +63,61 @@ public class HologramTextLine extends HologramLine {
         return spawnPacket;
     }
 
-    private void setHorseToArmorStand() {
-        // TODO Set #getSkullPacket to Armor Stand
-    }
+    private void setAsLegacyPacket(PacketPlayOutSpawnEntityLiving packet) {
+        DataWatcher dataWatcher = EntityUtils.getDataWatcher();
+        dataWatcher.a(INVISIBILITY.getId(), (byte) 0);
+        dataWatcher.a(1, (short) 300); // Not sure
+        dataWatcher.a(CUSTOM_NAME.getId(), text);
+        dataWatcher.a(CUSTOM_NAME_VISIBLE.getId(), (byte) 1);
 
-    public PacketPlayOutSpawnEntityLiving getHorsePacket() {
-        DummyEntityHorse entity = new DummyEntityHorse(((CraftWorld) location.getWorld()).getHandle(), text);
-        Bukkit.broadcastMessage(ChatColor.YELLOW + "Entity id: " + entity.getId());
-        DataWatcher watcher = new DataWatcher(entity);
-        watcher.a(INVISIBILITY.getId(), (byte) 0);
-        watcher.a(1, (short) 300); // Not sure
-
-        watcher.a(CUSTOM_NAME.getId(), ChatColor.translateAlternateColorCodes('&', text));
-        watcher.a(CUSTOM_NAME_VISIBLE.getId(), (byte) 1);
-
-        // This will make the Horse invisible although it does not have
+        // This will make the Horse invisible, although it does not have
         // a collision box and the location won't be accurate
         // Which is why we use a Wither Projectile to ride the Horse (prevent it from falling)
         // and shouldn't be visible
-        watcher.a(AGE.getId(), -1700000);
+        dataWatcher.a(AGE.getId(), -1700000);
+        try {
+            ReflectionUtils.setValue(packet, true, "b", (int) EntityType.HORSE.getTypeId());
+            ReflectionUtils.setValue(packet, true, "c", MathHelper.floor((location.getY() - 0.13 + HologramLine.OFFSET_HORSE) * 32.0D)); // Update yPos for horse
+            ReflectionUtils.setValue(packet, true, "l", dataWatcher);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+    }
 
-        //entity.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
-        PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(entity.getId(), (byte) EntityType.HORSE.getTypeId(), location.getX(), location.getY(), location.getZ(), entity.yaw, entity.pitch, entity.getHeadRotation(), 0, 0, 0, watcher);
+    @Override
+    public List<Packet<?>> getPacketsFor(Player player) {
+        List<Packet<?>> packets = new ArrayList<>();
+        PacketPlayOutSpawnEntityLiving spawnPacket = getSpawnPacket(location);
+        if (HologramPlugin.getInstance().onLegacyVersion(player)) {
+            setAsLegacyPacket(spawnPacket); // Sets as horse
 
-//        // Try this
-//        entity.locX = location.getX();
-//        entity.locY = location.getY();
-//        entity.locZ = location.getZ();
-//        entity.yaw = location.getYaw();
-//        entity.pitch = location.getPitch();
-//        entity.getHeadRotation();
-//        packet = new PacketPlayOutSpawnEntityLiving(entity);
-//        try {
-//            ReflectionUtils.setValue(packet, true, "l", watcher);
-//        } catch (IllegalAccessException | NoSuchFieldException e) {
-//            e.printStackTrace();
-//        }
-        // TODO Use reflections to manipulate changes
-        return packet;
+            packets.add(getSkullPacket(location));
+            // TODO Add Skull Packet
+            // TODO Add Attach Packet
+
+        } else {
+        }
+        packets.add(spawnPacket);
+        return packets;
+    }
+
+    // TODO Send destroy packet
+    public void destroy() {
+
+    }
+
+    // TODO send update metadata packet
+    public void update() {
+
+    }
+
+    // TODO send teleport packet
+    public void teleport(Location location) {
+
+    }
+
+    public void setLocation(Location location) {
+//        this.location = location;
+        teleport(location);
     }
 }

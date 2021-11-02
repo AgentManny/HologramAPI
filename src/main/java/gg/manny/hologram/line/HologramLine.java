@@ -13,7 +13,8 @@ public abstract class HologramLine {
     protected static int ARMOR_STAND_ID = 30;
     protected static int WITHER_SKULL_PROJECTILE_ID = 66;
 
-    protected static double HORSE_OFFSET = 0.55;
+    protected static double OFFSET_HORSE = 58.25;
+    protected static double OFFSET_OTHER = 1.2;
 
     protected final Location location;
 

@@ -7,6 +7,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import protocolsupport.api.ProtocolSupportAPI;
+import protocolsupport.api.ProtocolVersion;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,11 +20,15 @@ public class HologramPlugin extends JavaPlugin implements Listener {
 
     private static HologramPlugin instance;
 
+    private boolean protocolSupport = false;
+
     private Set<Hologram> holograms = new HashSet<>();
 
     @Override
     public void onEnable() {
         instance = this;
+
+        protocolSupport = getServer().getPluginManager().isPluginEnabled("ProtocolSupport");
 
         getCommand("hologram").setExecutor(new HologramCommand(this));
 
@@ -34,12 +40,18 @@ public class HologramPlugin extends JavaPlugin implements Listener {
         instance = null;
     }
 
-    public static int getProtocolVersion(Player player) {
-        return player.getProtocolVersion(); // TODO Hook into ProtocolSupport
+    public int getProtocolVersion(Player player) {
+        if (protocolSupport) {
+            return ProtocolSupportAPI.getProtocolVersion(player).getId();
+        }
+        return player.getProtocolVersion();
     }
 
-    public static boolean onLegacyVersion(Player player) {
-        return getProtocolVersion(player) < 5;
+    public boolean onLegacyVersion(Player player) {
+        if (protocolSupport) {
+            return ProtocolSupportAPI.getProtocolVersion(player).isBefore(ProtocolVersion.MINECRAFT_1_8);
+        }
+         return getProtocolVersion(player) >= 5;
     }
 
     public static HologramPlugin getInstance() {

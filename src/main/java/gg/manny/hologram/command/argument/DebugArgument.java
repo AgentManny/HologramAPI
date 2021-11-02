@@ -24,7 +24,7 @@ public class DebugArgument implements CommandArgument {
     public void execute(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            player.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + "Version: " + HologramPlugin.getProtocolVersion(player) + " (Legacy: " + HologramPlugin.onLegacyVersion(player) + ")");
+            player.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + "Version: " + plugin.getProtocolVersion(player) + " (Legacy: " + plugin.onLegacyVersion(player) + ")");
             CraftHologram test = new CraftHologram(UUID.randomUUID(), "Test", player.getLocation());
             test.addLines(ChatColor.GREEN + "This is a hologram :)");
             test.sendTo(player);

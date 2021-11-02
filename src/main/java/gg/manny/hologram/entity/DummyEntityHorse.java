@@ -14,7 +14,7 @@ public class DummyEntityHorse extends EntityHorse implements DummyEntity {
 
     private boolean shouldUpdate = false;
 
-    public DummyEntityHorse(World world, String text) {
+    public DummyEntityHorse(World world) {
         super(world);
 
 //        d(69); // Set entity id todo generate fake entity id
@@ -36,6 +36,12 @@ public class DummyEntityHorse extends EntityHorse implements DummyEntity {
 
     @Override
     public void inactiveTick() {
+
+    }
+
+    // Tick
+    @Override
+    public void t_() {
 
     }
 
@@ -109,7 +115,17 @@ public class DummyEntityHorse extends EntityHorse implements DummyEntity {
     }
 
     @Override
+    public boolean damageEntity(DamageSource damagesource, float f) {
+        return false;
+    }
+
+    @Override
     public void mount(Entity entity) {
+
+    }
+
+    @Override
+    public void die() {
 
     }
 
