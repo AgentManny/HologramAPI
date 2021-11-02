@@ -76,7 +76,7 @@ public class HologramItemLine extends HologramLine {
     public PacketPlayOutSpawnEntity getSkullPacket(Location location) {
         PacketPlayOutSpawnEntity spawnPacket = new PacketPlayOutSpawnEntity(skullId,
                 location.getX(),
-                location.getY() - 0.13 + 55.0,
+                location.getY() - 0.13,
                 location.getZ(),
                 0, 0, 0,
                 (int) location.getPitch(),
