@@ -5,10 +5,8 @@ import gg.manny.hologram.HologramPlugin;
 import gg.manny.hologram.command.CommandArgument;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
@@ -29,7 +27,7 @@ public class DebugArgument implements CommandArgument {
             player.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + "Version: " + plugin.getProtocolVersion(player) + " (Legacy: " + plugin.onLegacyVersion(player) + ")");
             CraftHologram test = new CraftHologram(UUID.randomUUID(), "Test", player.getLocation());
             test.addLines(ChatColor.GREEN + "This is a hologram :)", ChatColor.YELLOW + "Can we handle two");
-            test.addItem(new ItemStack(Material.MUSHROOM_SOUP));
+//            test.addItem(new ItemStack(Material.MUSHROOM_SOUP));
             test.sendTo(player);
         }
     }
