@@ -62,16 +62,14 @@ public class CraftHologram implements Hologram {
 
     @Override
     public void sendTo(Player player) {
-        if (!viewers.contains(player.getUniqueId())) {
-            viewers.add(player.getUniqueId());
-            Location location = this.location.clone().add(0, this.lines.size() * DISTANCE, 0);
-            for (HologramLine line : lines) {
-                if (line instanceof HologramItemLine) {
-                    location.subtract(0, DISTANCE / 2, 0);
-                }
-                line.getPacketsFor(player, location).forEach(packet -> sendPacket(player, packet));
-                location.subtract(0, line instanceof HologramItemLine ? DISTANCE * 2 : DISTANCE, 0);
+        viewers.add(player.getUniqueId());
+        Location location = this.location.clone().add(0, this.lines.size() * DISTANCE, 0);
+        for (HologramLine line : lines) {
+            if (line instanceof HologramItemLine) {
+                location.subtract(0, DISTANCE / 2, 0);
             }
+            line.getPacketsFor(player, location).forEach(packet -> sendPacket(player, packet));
+            location.subtract(0, line instanceof HologramItemLine ? DISTANCE * 2 : DISTANCE, 0);
         }
     }
 

@@ -12,7 +12,7 @@ public final class HologramAPI {
 
     public static Optional<Hologram> getHologram(String id) {
         return holograms.values().stream()
-                .filter((hologram) -> hologram.getId().equalsIgnoreCase(id))
+                .filter((hologram) -> id != null && hologram.getId().equalsIgnoreCase(id))
                 .findAny();
     }
 

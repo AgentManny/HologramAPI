@@ -13,6 +13,7 @@ import java.util.UUID;
 
 public class HologramBuilder {
 
+    private String id;
     private Location location;
 
     private List<HologramLine> lines = new ArrayList<>();
@@ -25,6 +26,11 @@ public class HologramBuilder {
 
     public HologramBuilder(UUID... viewers) {
         this.viewers.addAll(Arrays.asList(viewers));
+    }
+
+    public HologramBuilder id(String id) {
+        this.id = id;
+        return this;
     }
 
     public HologramBuilder location(Location location) {
@@ -51,10 +57,9 @@ public class HologramBuilder {
 
     public CraftHologram build() {
         if (location == null) throw new NullPointerException("Location cannot be null");
-        CraftHologram hologram = new CraftHologram(location);
+        CraftHologram hologram = new CraftHologram(id, location);
         hologram.getLines().addAll(lines);
         hologram.getViewers().addAll(viewers);
-        hologram.send();
         return hologram;
     }
 

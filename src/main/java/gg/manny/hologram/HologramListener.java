@@ -5,10 +5,8 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class HologramListener implements Listener {
 
@@ -25,6 +23,23 @@ public class HologramListener implements Listener {
                 }
             }
         }
+    }
+
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Hologram hologram : HologramAPI.getHolograms().values()) {
+                    if (hologram.getLocation().getWorld().equals(player.getWorld())) {
+                        if (hologram.getViewers().contains(player.getUniqueId()) || (player.getLocation().distance(hologram.getLocation()) < CraftHologram.DISTANCE_RADIUS && !hologram.getViewers().contains(player.getUniqueId()))) {
+                            hologram.sendTo(player);
+                        }
+                    }
+                }
+            }
+        }.runTaskLater(HologramPlugin.getInstance(), 15L);
     }
 
     @EventHandler
